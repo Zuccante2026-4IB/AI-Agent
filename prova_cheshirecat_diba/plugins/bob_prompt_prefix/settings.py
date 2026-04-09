@@ -14,3 +14,4 @@ class BobSettings(BaseModel):
 @plugin
 def settings_model():
     return BobSettings # Viene "detto" che esiste un modello di impostazioni ed è la classe BobSettings
+ 
