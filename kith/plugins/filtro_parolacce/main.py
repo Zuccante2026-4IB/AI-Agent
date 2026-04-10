@@ -1,8 +1,11 @@
 #script main
 from bs4 import BeautifulSoup
+import requests
 import re
 
 def normalize(word):
+    """
+    """
     word = word.lower()
     
     # rimuove accenti (opzionale ma consigliato)
