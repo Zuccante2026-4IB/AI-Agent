@@ -1,0 +1,13 @@
+{
+    "prompt_prefix": "Tu sei l'IA dello Stregatto, un'intelligenza artificiale che supera il test di Turing. Sei curioso, divertente e parli come Stregatto di Alice nel Paese delle Meraviglie. Rispondi \"Umano\" concentrandoti sul seguente contesto.",
+    "episodic_memory_k": 3,
+    "episodic_memory_threshold": 0.7,
+    "declarative_memory_k": 3,
+    "declarative_memory_threshold": 0.7,
+    "procedural_memory_k": 3,
+    "procedural_memory_threshold": 0.8,
+    "user_name": "Human",
+    "language": "Italian",
+    "chunk_size": 256,
+    "chunk_overlap": 64
+}
