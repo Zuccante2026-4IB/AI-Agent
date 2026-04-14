@@ -1,4 +1,4 @@
 {
-    "name" : "",
-    "description": ""
+    "name" : "Ricerca degli eventi",
+    "description": "Plugin per permettere di cercare tra gli eventi disponibli in zona anche secondo dei parametri quali data, ora, luogo, target ecc."
 }

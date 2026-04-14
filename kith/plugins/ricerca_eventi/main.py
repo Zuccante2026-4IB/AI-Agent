@@ -1,6 +1,7 @@
 # script main
 
 from pydantic import ValidationError
+import ricerca_parametrica
 
 # TODO DA MODIFICARE IN BASE A QUANDO VA CHIAMATO
 #TO TEST
