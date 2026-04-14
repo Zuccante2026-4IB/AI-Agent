@@ -38,4 +38,4 @@ def before_cat_recalls_episodic_memories(episodic_recall_config, cat):
     # cambiamento del numero di memorie episodiche richiamate
     episodic_recall_config["k"] = 0
 
-    return episodic_recall_config 
+    return episodic_recall_config
