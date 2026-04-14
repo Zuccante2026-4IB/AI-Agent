@@ -1,4 +1,19 @@
-#script main
+# script main
+
+# Ciao chiuqnue tu sia che sviluppa questo codice sono Alessio, sei pregato di inserire nel file requirements.txt tutte le librerie
+# che intendi utilizzare e che non siano già presenti nell'interprete come default come ho fatto io per dimostrare (in questo caso
+# beautifulsoap4 ovvero bs4 4 requests).
+#
+# Sei inoltre pregato di non usare l'intelligenza artificiale per sviluppare questo codice o in tal caso cerca di capirlo e 
+# commentarlo a dovere per fare poi un test, inserisci il tag TEST o DEBUG in un commento sopra ai metodi ancora da testare, il tag
+# prima del metodo FIXME se devi indicare che qualcosa deve essere sistemato oppure il tag TODO se devi indicare qualcosa ancora da fare
+# (P.S. Non deve essere una scusa per lasciare ad altri il lavoro che non vuoi fare ;) )
+#
+# Buona fortuna a svilupapre il codice
+# AlessioDiBattista (RustRello)
+#
+# Elimina il commento enorme che ho lasciato dopo averlo letto, serve solo per comunicazione <3
+
 from bs4 import BeautifulSoup
 import requests
 import re
