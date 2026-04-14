@@ -1,0 +1,2 @@
+# Ignorando la cartella data per il versionamento in quanto dopo troppo pesante per spostarla su remote
+./data
