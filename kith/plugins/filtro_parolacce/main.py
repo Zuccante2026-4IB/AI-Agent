@@ -1,29 +1,21 @@
-# script main
+from bs4 import BeautifulSoup  # per analizzare HTML
+import requests                # per scaricare la pagina web
+import re                      # per usare le regex
 
-# Ciao chiuqnue tu sia che sviluppa questo codice sono Alessio, sei pregato di inserire nel file requirements.txt tutte le librerie
-# che intendi utilizzare e che non siano già presenti nell'interprete come default come ho fatto io per dimostrare (in questo caso
-# beautifulsoap4 ovvero bs4 4 requests).
-#
-# Sei inoltre pregato di non usare l'intelligenza artificiale per sviluppare questo codice o in tal caso cerca di capirlo e 
-# commentarlo a dovere per fare poi un test, inserisci il tag TEST o DEBUG in un commento sopra ai metodi ancora da testare, il tag
-# prima del metodo FIXME se devi indicare che qualcosa deve essere sistemato oppure il tag TODO se devi indicare qualcosa ancora da fare
-# (P.S. Non deve essere una scusa per lasciare ad altri il lavoro che non vuoi fare ;) )
-#
-# Buona fortuna a svilupapre il codice
-# AlessioDiBattista (RustRello)
-#
-# Elimina il commento enorme che ho lasciato dopo averlo letto, serve solo per comunicazione <3
-
-from bs4 import BeautifulSoup
-import requests
-import re
 
 def normalize(word):
     """
+    Pulisce e normalizza una parola:
+    - minuscolo
+    - rimuove accenti
+    - rimuove simboli
+    - rimuove spazi
     """
+    
+    # tutto minuscolo
     word = word.lower()
     
-    # rimuove accenti (opzionale ma consigliato)
+    # sostituzione accenti
     replacements = {
         "à": "a", "è": "e", "é": "e",
         "ì": "i", "ò": "o", "ù": "u"
@@ -31,42 +23,71 @@ def normalize(word):
     for k, v in replacements.items():
         word = word.replace(k, v)
 
-    # rimuove tutto tranne lettere
+    # rimuove tutto tranne lettere e spazi
     word = re.sub(r"[^a-z\s]", "", word)
 
-    # rimuove spazi (attacca tutto)
+    # rimuove gli spazi
     word = word.replace(" ", "")
 
     return word
 
 
 def extract_italian_words(html):
+    """
+    Estrae parole italiane da tag HTML con:
+    <i lang="it">...</i>
+    """
+    
+    # parsing HTML
     soup = BeautifulSoup(html, "html.parser")
+    
+    # set per evitare duplicati
     results = set()
 
+    # trova SOLO tag <i> con attributo lang="it"
     for tag in soup.find_all("i", attrs={"lang": "it"}):
+        
+        # testo interno del tag
         text = tag.get_text().strip()
 
-        # split varianti
+        # divide varianti (es: parola1 / parola2 or parola3)
         parts = re.split(r"/|\bor\b", text, flags=re.IGNORECASE)
 
         for part in parts:
+            # normalizza la parola
             part = normalize(part)
 
+            # aggiunge solo se non vuota
             if part:
                 results.add(part)
 
+    # restituisce lista ordinata
     return sorted(results)
 
 
-# ==== USO ====
+# ===== PROGRAMMA PRINCIPALE =====
 if __name__ == "__main__":
-    with open("input.html", "r", encoding="utf-8") as f:
-        html = f.read()
 
+    # URL della pagina Wikipedia
+    url = "https://en.wikipedia.org/wiki/Italian_profanity"
+
+    # richiesta HTTP
+    response = requests.get(url)
+
+    # controllo errore
+    if response.status_code != 200:
+        print("Errore nel download:", response.status_code)
+        exit()
+
+    # HTML della pagina
+    html = response.text
+
+    # estrazione parole italiane
     words = extract_italian_words(html)
 
+    # stampa risultati
     for w in words:
         print(w)
 
+    # stampa totale
     print(f"\nTotale: {len(words)}")
