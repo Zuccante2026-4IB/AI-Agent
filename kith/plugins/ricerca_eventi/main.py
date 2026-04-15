@@ -1,7 +1,7 @@
 # script main
 
 from pydantic import ValidationError
-import ricerca_parametrica
+import plugins.ricerca_eventi.ricerca_eventi as ricerca_eventi
 
 # TODO DA MODIFICARE IN BASE A QUANDO VA CHIAMATO
 #TO TEST
