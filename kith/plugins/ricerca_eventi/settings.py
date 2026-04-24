@@ -11,13 +11,10 @@ class RicercaEventiSettings(BaseModel):
     
     #TO TEST TESTARE IL VALORE PREDEFINITO DENTRO UN'ARRAY E VEDERE COME GESTISCE LA CHAT TUTTO QUESTO
     target : Literal [
-    "tutti",          # (tutte le età)
-    "bambini",        # (0–12)
-    "ragazzi",        # (13–17)
-    "giovani",        # (18–25)
-    "adulti",         # (26–40)
-    "adulti_maturi",  # (41–60)
-    "senior"          # (60+)
+        "preadolescenti",
+        "adolescenti",
+        "giovani",
+        "giovani_maturi"
     ]= ["tutti"] # valore di default = [tutti] e accetta solo i valori passati a Literal, accetta più valori
     
     #TO TEST
