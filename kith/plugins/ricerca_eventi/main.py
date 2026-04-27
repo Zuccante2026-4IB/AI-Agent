@@ -5,7 +5,8 @@ import plugins.ricerca_eventi.ricerca_eventi as ricerca_eventi
 
 # TODO DA MODIFICARE IN BASE A QUANDO VA CHIAMATO
 #TO TEST
-def carica_impostazioni_plugin():
+@hook(priority=10)
+def carica_impostazioni_plugin(cat):
     try:
         settings = cat.mad_hatter.get_plugin().load_settings()
     except ValidationError as _: # "_" indica quando l'istanza non si usa (sennò si sarebbe messo "e" al posto di "_")
