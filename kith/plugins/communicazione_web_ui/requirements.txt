@@ -1,0 +1,9 @@
+websockets
+websocket-client
+flask.socketio
+fastapi
+starlette
+aiohttps
+socketio
+requests==2.32.3
+python-dotenv==1.0.1
