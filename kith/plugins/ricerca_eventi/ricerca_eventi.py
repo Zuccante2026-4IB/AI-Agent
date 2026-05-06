@@ -9,9 +9,9 @@ import json
 
 @tool(
     return_direct=False, # per indicare che la risposta non va stampata direttamente ma "rimandata" al modello che la elabora
-    examples=["", ""] #todo
+    examples=["", ""] # todo 
 )
-#TO TEST
+# TO TEST 
 def cerca_con_parametro(*param, cat):
     # L'attributo *param indica tutti i criteri secondo cui si puo fare la ricerca
     """
@@ -80,4 +80,5 @@ def cerca_con_parametro(*param, cat):
     else:
         print(f"Errore: {response.status_code}")
     
+    # TODO INSERIRE LINK ALL'EVENTO NELLA RISPOSTA 
     
