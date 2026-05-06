@@ -1,240 +1,97 @@
-# 🐱 Cheshire Cat AI – API Reference (Guida Completa)
+# API Cheshire Cat - Guida Rapida
 
-## (Secondo ChatGPT)
+## Elenco Endpoint e Descrizioni
 
-## 📌 Cos'è Cheshire Cat
+### Core & Conversazione
+- `GET /`: Verifica se il server è attivo e risponde.
+- `POST /query`: Invia un messaggio al Cat e riceve la risposta elaborata dall'LLM.
+- `GET /ws/{client_id}`: Apre una connessione WebSocket per la chat in tempo reale.
 
-Cheshire Cat è un framework open source per creare chatbot e agenti AI con memoria, plugin e gestione documenti.
+### Stato & Metadati
+- `GET /status`: Restituisce lo stato del sistema e del database vettoriale.
+- `GET /info`: Fornisce informazioni sulla versione e sui plugin attivi.
+
+### Memoria (LTM)
+- `GET /memory/collections`: Elenca le collezioni di memoria vettoriale disponibili.
+- `DELETE /memory/collections/{collection_id}`: Elimina un'intera collezione di memoria.
+- `GET /memory/recall`: Cerca ricordi rilevanti nelle memorie in base a una stringa.
+- `GET /memory/points/{collection_id}`: Recupera i singoli vettori memorizzati in una collezione.
+- `DELETE /memory/points/{collection_id}`: Elimina vettori specifici da una collezione.
+- `POST /memory/conversation_history/wipe`: Cancella interamente la cronologia della conversazione attuale.
+
+### Plugin & Tool
+- `GET /plugins`: Elenca tutti i plugin installati nel sistema.
+- `POST /plugins/upload`: Carica un nuovo plugin tramite file .zip.
+- `POST /plugins/upload/registry`: Installa un plugin direttamente dal registro ufficiale.
+- `GET /plugins/settings`: Recupera le configurazioni di tutti i plugin.
+- `GET /plugins/settings/{plugin_id}`: Recupera le impostazioni specifiche di un singolo plugin.
+- `PUT /plugins/settings/{plugin_id}`: Aggiorna le impostazioni di un plugin specifico.
+- `POST /plugins/toggle/{plugin_id}`: Attiva o disattiva un plugin senza disinstallarlo.
+- `DELETE /plugins/{plugin_id}`: Rimuove definitivamente un plugin dal sistema.
+
+### Impostazioni
+- `GET /settings`: Elenca tutte le impostazioni globali del Cat.
+- `POST /settings`: Crea una nuova configurazione globale.
+- `GET /settings/{setting_id}`: Recupera i dettagli di una specifica impostazione.
+- `PUT /settings/{setting_id}`: Modifica un'impostazione esistente.
+- `DELETE /settings/{setting_id}`: Elimina un'impostazione specifica.
+
+### Modelli (LLM & Embedder)
+- `GET /llm/list`: Elenca i modelli di linguaggio supportati e configurabili.
+- `PUT /llm/settings/{llm_id}`: Configura le chiavi API e i parametri per un LLM specifico.
+- `GET /embedder/list`: Elenca i modelli di embedding disponibili.
+- `PUT /embedder/settings/{embedder_id}`: Configura i parametri per un embedder specifico.
+
+### Rabbit Hole (Ingestione dati)
+- `POST /rabbithole`: Invia un file locale per essere indicizzato nella memoria.
+- `POST /rabbithole/web`: Invia un URL per estrarre contenuti web nella memoria.
+- `GET /rabbithole/allowed-mimetypes`: Elenca i formati di file supportati per il caricamento.
 
 ---
 
-# 🧠 1. CHAT API
+## Esempi per UI Web (JavaScript Fetch)
 
-## POST /v1/chat
-
-Invia un messaggio al bot e ricevi una risposta.
-
-### Request
-
-```json
-{
-  "message": "Ciao",
-  "conversation_id": "user1"
-}
+### 1. Inviare un messaggio alla Chat
+```javascript
+const sendMessage = async (text) => {
+    const response = await fetch('http://localhost:8006/query', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: text })
+    });
+    return await response.json();
+};
 ```
 
-### Response
-
-```json
-{
-  "response": "Ciao! Come posso aiutarti?",
-  "conversation_id": "user1"
-}
+### 2. Caricare un file nel Rabbit Hole
+```javascript
+const uploadFile = async (file) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    await fetch('http://localhost:8006/rabbithole', {
+        method: 'POST',
+        body: formData
+    });
+};
 ```
 
----
-
-## WS /v1/chat/stream
-
-Risposte in tempo reale (streaming token-by-token).
-
----
-
-# 💬 2. CONVERSAZIONI
-
-## GET /v1/conversations
-
-Lista di tutte le conversazioni
-
-## GET /v1/conversations/{id}
-
-Dettaglio conversazione
-
-## DELETE /v1/conversations/{id}
-
-Elimina conversazione
-
----
-
-# 🧠 3. MEMORY API
-
-## POST /v1/memory
-
-Salva informazioni nella memoria
-
-```json
-{
-  "text": "L'utente ama il calcio"
-}
+### 3. Cambiare Impostazioni di un Plugin
+```javascript
+const updatePluginSettings = async (pluginId, settings) => {
+    await fetch(`http://localhost:8006/plugins/settings/${pluginId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(settings)
+    });
+};
 ```
 
----
-
-## GET /v1/memory?query=...
-
-Cerca nella memoria
-
----
-
-## DELETE /v1/memory/{id}
-
-Elimina memoria
-
----
-
-# 📄 4. DOCUMENTS (RAG)
-
-## POST /v1/documents
-
-Carica documenti (PDF, TXT, ecc.)
-
-## GET /v1/documents
-
-Lista documenti
-
-## DELETE /v1/documents/{id}
-
-Elimina documento
-
----
-
-# 🔍 5. SEARCH & EMBEDDINGS
-
-## POST /v1/embeddings
-
-Genera embedding
-
-## POST /v1/search
-
-Ricerca semantica nei dati
-
----
-
-# 🔌 6. PLUGINS
-
-## GET /v1/plugins
-
-Lista plugin disponibili
-
-## POST /v1/plugins/{plugin_id}/toggle
-
-Attiva/disattiva plugin
-
-## POST /v1/plugins/{plugin_id}/settings
-
-Configura plugin
-
----
-
-# ⚙️ 7. LLM CONFIG
-
-## GET /v1/llm
-
-Ottieni configurazione corrente
-
-## POST /v1/llm
-
-Imposta configurazione
-
-```json
-{
-  "provider": "openai",
-  "model": "gpt-4",
-  "temperature": 0.7
-}
+### 4. Connessione WebSocket (Real-time)
+```javascript
+const socket = new WebSocket('ws://localhost:8006/ws/user_123');
+socket.onmessage = (event) => {
+    const data = JSON.parse(event.data);
+    console.log("Messaggio dal Cat:", data.content);
+};
 ```
-
----
-
-# 👤 8. USERS
-
-## GET /v1/users
-
-Lista utenti
-
-## POST /v1/users
-
-Crea utente
-
----
-
-# 🔐 9. AUTH
-
-## POST /v1/auth/login
-
-Login
-
-## POST /v1/auth/logout
-
-Logout
-
----
-
-# 📡 10. SYSTEM
-
-## GET /v1/status
-
-Stato sistema
-
-## GET /v1/health
-
-Health check
-
----
-
-# 🌐 11. WEBSOCKET
-
-## WS /ws
-
-Connessione realtime
-
----
-
-# 🧱 STRUTTURA GENERALE
-
-* Chat → /v1/chat
-* Memoria → /v1/memory
-* Documenti → /v1/documents
-* Plugin → /v1/plugins
-* Config AI → /v1/llm
-
----
-
-# ⚠️ NOTE IMPORTANTI
-
-* Le API possono cambiare in base alla versione
-* Alcune route dipendono dai plugin attivi
-* Cheshire Cat va hostato in locale o server
-
----
-
-# 🚀 TEST API
-
-Apri nel browser:
-
-http://localhost:1865/docs
-
-Troverai Swagger UI con tutte le API aggiornate.
-
----
-
-# ✅ USE CASE TIPICI
-
-* Chatbot con memoria
-* Assistente con documenti (RAG)
-* AI con plugin personalizzati
-* Backend per app AI
-
----
-
-# 🎯 CONSIGLIO
-
-Inizia da:
-
-1. /v1/chat
-2. /v1/memory
-3. /v1/documents
-
-E poi espandi con plugin e configurazioni.
-
----
