@@ -82,3 +82,7 @@ def cerca_con_parametro(*param, cat):
     
     # TODO INSERIRE LINK ALL'EVENTO NELLA RISPOSTA 
     
+    
+    
+    
+    return param
