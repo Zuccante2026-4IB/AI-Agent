@@ -4,9 +4,36 @@ from cat.mad_hatter.decorators import tool
 import requests
 import json
 
-
-# se la ricerca richiede più parametri, si possono mettere in sequenza le funzioni di ricerca
-
+class DatabaseConnectionData:
+    # Content-Type = application/json
+    BASE_URL = "https://strapi.brusegan.it"
+    BEARER_TOKEN = "cff92e74316f57f7cd63ce9f93cf8fb309f0f15f673ed41d81afe4f1569a81f88d6b1b4268a94f97e5eb52802a1e1b49ac6702c060f1b96d1d02fa3103f84df65445e2307cd5f15b3ccb141fc91147470465304d44d6f53784989b971c4468aa6932c0b9dc3ed37da4a33e2cd58fcb9fdb87863ead235adca7c87513f47f6e1c"
+    LISTA_FASCE = [
+        "preadolescenti",
+        "adolescenti",
+        "giovani",
+        "giovani_adulti"
+    ]
+    
+    query_params = {
+        # permette di avere gli eventi con tutti i dettagli, se assente fornirà l'evento con parte soltanto dei dati
+        "populate": "*",
+    }
+    
+    # utilizzando: filters[target][fascia][$in][{i}]
+    
+    query_headers = {
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {BEARER_TOKEN}"
+    }
+    
+    def __init__(self, populate=True):
+        self.query_params["populate"] = "*" if populate else ""
+        
+        pass
+        
+        
+        
 @tool(
     return_direct=False, # per indicare che la risposta non va stampata direttamente ma "rimandata" al modello che la elabora
     examples=[
@@ -96,7 +123,8 @@ def cerca_con_parametro(*param, cat):
     ]
     
     query_params = {
-        "populate": "*", # permette di avere gli eventi con tutti i dettagli
+        # permette di avere gli eventi con tutti i dettagli, se assente fornirà l'evento con parte soltanto dei dati
+        "populate": "*",
     }
     
     # utilizzando: filters[target][fascia][$in][{i}]
