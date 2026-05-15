@@ -159,6 +159,6 @@ def cerca_con_parametro(args, cat):
     
     response = richiesta_eventi_server(DCD=DCD) # response è già in formato json 
     
-    return {
+    return dict({ # restituzione di un dizionario python che verrà usato come json dal gatto
         "risposta_database": response
-    }
+    })
