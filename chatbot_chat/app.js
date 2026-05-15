@@ -14,7 +14,7 @@ document.addEventListener("DOMContentLoaded", function () {
             const messageRowAi = document.createElement("div");
             messageRowAi.classList.add("messagerow-ai");
             let s = '';
-            s += '<img src="background.jpg" alt="AI Avatar">';
+            s += '<img src="img/ai_chat_logo/Kith.png" alt="AI Avatar">';
             s += '<div class="message-ai">' + text + '</div>';
             messageRowAi.innerHTML = s;
             chatarea.appendChild(messageRowAi);
@@ -23,7 +23,7 @@ document.addEventListener("DOMContentLoaded", function () {
             messageRow.classList.add("messagerow-user");
             let s = '';
             s += '<div class="message-user">' + text + '</div>';
-            s += '<img src="background.jpg" alt="User Avatar">';
+            s += '<img src="img/user_avatar.png" alt="User Avatar">';
             messageRow.innerHTML = s;
             chatarea.appendChild(messageRow);
         }
