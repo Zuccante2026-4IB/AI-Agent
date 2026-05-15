@@ -9,19 +9,17 @@ class DatabaseConnectionData:
     BASE_URL = "https://strapi.brusegan.it"
     BEARER_TOKEN = "cff92e74316f57f7cd63ce9f93cf8fb309f0f15f673ed41d81afe4f1569a81f88d6b1b4268a94f97e5eb52802a1e1b49ac6702c060f1b96d1d02fa3103f84df65445e2307cd5f15b3ccb141fc91147470465304d44d6f53784989b971c4468aa6932c0b9dc3ed37da4a33e2cd58fcb9fdb87863ead235adca7c87513f47f6e1c"
     LISTA_FASCE = [
-        "preadolescenti",
-        "adolescenti",
-        "giovani",
-        "giovani_adulti"
+        "preadolescenti", # anni: 10 - 13
+        "adolescenti",    # anni: 14 - 17
+        "giovani",        # anni: 18 - 24
+        "giovani_adulti"  # anni: 25 - 35
     ]
-    
     query_params = {
         # permette di avere gli eventi con tutti i dettagli, se assente fornirà l'evento con parte soltanto dei dati
         "populate": "*",
+        "pagination[pageSize]": ""
     }
-    
     # utilizzando: filters[target][fascia][$in][{i}]
-    
     query_headers = {
         "Content-Type": "application/json",
         "Authorization": f"Bearer {BEARER_TOKEN}"
@@ -31,7 +29,19 @@ class DatabaseConnectionData:
         self.query_params["populate"] = "*" if populate else ""
         
         pass
-        
+  
+def richiesta_eventi_server(DCD:DatabaseConnectionData|None, amount:int|None) -> dict: # restituisce un dizionario
+    # restituisce solo 5 eventi dalla ricerca se il parametro amount è None (null)
+    DCD.query_params["pagination[pageSize]"] = 5 if amount is None else amount
+    
+    response = requests.get(f"{DCD.BASE_URL}/api/eventos", params=DCD.query_params, headers=DCD.query_headers)
+    # controllo della richiesta se andata a buon fine
+    if response.status_code == 200:
+        dati = response.json()
+    else:
+        print(f"Errore con la richiesta: {response.status_code}")
+
+    return dati      
         
         
 @tool(
@@ -83,10 +93,9 @@ class DatabaseConnectionData:
     "Cosa organizzate per i più giovani?",
     "Attività per ragazzi in età scolare",
 ]
-)
-# TO TEST 
-def cerca_con_parametro(*param, cat):
-    # L'attributo *param indica tutti i criteri secondo cui si puo fare la ricerca
+) 
+def cerca_con_parametro(args, cat):
+    # L'attributo args indica tutti i criteri secondo cui si puo fare la ricerca, è un dizionario python
     """
         Cerca eventi nel database in base a qualsiasi criterio espresso dall'utente.
 
@@ -109,44 +118,47 @@ def cerca_con_parametro(*param, cat):
         L'utente può cercare per uno o più criteri contemporaneamente.
         L'input del tool è la richiesta grezza dell'utente dalla quale
         andranno estratti i parametri di ricerca.
+        
+        Nel valore di ritorno c'è un dizionario python quindi un JSON dove c'è un tag 'risposta_database' che contiene
+        la risposta del database dopo la richiesta degli eventi, tu prendi questa risposta e devi fornirla all'utente 
+        rielaborandola correttamente
     """
-    pass
+    pass #!
     
     # Content-Type = application/json
-    BASE_URL = "https://strapi.brusegan.it"
-    BEARER_TOKEN = "cff92e74316f57f7cd63ce9f93cf8fb309f0f15f673ed41d81afe4f1569a81f88d6b1b4268a94f97e5eb52802a1e1b49ac6702c060f1b96d1d02fa3103f84df65445e2307cd5f15b3ccb141fc91147470465304d44d6f53784989b971c4468aa6932c0b9dc3ed37da4a33e2cd58fcb9fdb87863ead235adca7c87513f47f6e1c"
-    LISTA_FASCE = [
-        "preadolescenti",
-        "adolescenti",
-        "giovani",
-        "giovani_adulti"
-    ]
+    BASE_URL = DatabaseConnectionData.BASE_URL
+    BEARER_TOKEN = DatabaseConnectionData.BEARER_TOKEN
+    LISTA_FASCE = DatabaseConnectionData.LISTA_FASCE
+    query_headers = DatabaseConnectionData.query_headers
+    query_params = DatabaseConnectionData.query_params
     
-    query_params = {
-        # permette di avere gli eventi con tutti i dettagli, se assente fornirà l'evento con parte soltanto dei dati
-        "populate": "*",
+    fascia_interessata:str = cat.llm(
+        """
+            In base alla richiesta dell'utente dell'evento, rispondi a modo:
+            
+            preadolescenti - la risposta che devi dare se l'età è compresa tra i 10 e i 13 anni
+            adolescenti - la risposta che devi dare se l'età è compresa tra i 14 e i 17 anni
+            giovani - la risposta che devi dare se l'età è compresa tra i 18 e i 24 anni
+            giovani_adulti - la risposta che devi dare se l'età è compresa tra i 25 e i 35 anni
+        """
+    )
+    
+    # parametrizzazione della query in base alla fascia interessata
+    match fascia_interessata:
+        case "preadolescenti":
+            # istruzione modificando la query con filters[target][fascia][$in][{i}]
+            DCD["query_params"[f"filters[target][fascia][$in][{0}]"]]=fascia_interessata
+        case "adolescenti":
+            DCD["query_params"[f"filters[target][fascia][$in][{1}]"]]=fascia_interessata
+        case "giovani":
+            DCD["query_params"[f"filters[target][fascia][$in][{2}]"]]=fascia_interessata
+        case "giovani_adulti":
+            DCD["query_params"[f"filters[target][fascia][$in][{3}]"]]=fascia_interessata
+                
+    DCD = DatabaseConnectionData(populate=True)
+    
+    response = richiesta_eventi_server(DCD=DCD) # response è già in formato json 
+    
+    return {
+        "risposta_database": response
     }
-    
-    # utilizzando: filters[target][fascia][$in][{i}]
-    
-    query_headers = {
-        "Content-Type": "application/json",
-        "Authorization": f"Bearer {BEARER_TOKEN}"
-    }
-    
-    response = requests.get(f"{BASE_URL}/api/eventos", params=query_params, headers=query_headers)
-    
-    if response.status_code == 200:
-        dati = response.json()
-    else:
-        print(f"Errore: {response.status_code}")
-    
-    # TODO INSERIRE LINK ALL'EVENTO NELLA RISPOSTA 
-    
-    
-    
-    
-    return param
-
-def richiesta_eventi_server():
-    pass # funzione per la richiesta al server
