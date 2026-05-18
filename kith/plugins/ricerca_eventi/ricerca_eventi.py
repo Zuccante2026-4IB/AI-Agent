@@ -45,7 +45,7 @@ def richiesta_eventi_server(DCD:DatabaseConnectionData|None, amount:int|None) ->
         
         
 @tool(
-    return_direct=False, # per indicare che la risposta non va stampata direttamente ma "rimandata" al modello che la elabora
+    return_direct=True, # per indicare che la risposta non va stampata direttamente ma "rimandata" al modello che la elabora
     examples=[
     # età esplicita propria
     "Ho 12 anni, ci sono eventi per me?",
@@ -123,7 +123,7 @@ def cerca_con_parametro(args, cat):
         la risposta del database dopo la richiesta degli eventi, tu prendi questa risposta e devi fornirla all'utente 
         rielaborandola correttamente
     """
-    pass #!
+    #pass #!
     
     # Content-Type = application/json
     BASE_URL = DatabaseConnectionData.BASE_URL
@@ -157,7 +157,7 @@ def cerca_con_parametro(args, cat):
                 
     DCD = DatabaseConnectionData(populate=True)
     
-    response = richiesta_eventi_server(DCD=DCD) # response è già in formato json 
+    response = richiesta_eventi_server(DCD=DCD, amount=3) # response è già in formato json 
     
     return dict({ # restituzione di un dizionario python che verrà usato come json dal gatto
         "risposta_database": response
